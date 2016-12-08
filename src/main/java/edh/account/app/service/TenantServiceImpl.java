@@ -13,6 +13,9 @@ public class TenantServiceImpl implements TenantService {
     private TenantRepository tenantRepository;
     
     @Autowired
+    private RentReceiptRepository receiptRepository;
+    
+    @Autowired
     private PaymentProcessor paymentProcessor;
     
     @Override
@@ -27,11 +30,14 @@ public class TenantServiceImpl implements TenantService {
     }
     
     @Override
-    public RentReceipt applyPayment(Long tenantId, Double paymentAmout) {
+    public RentReceipt applyPayment(Long tenantId, Double paymentAmount) {
         RentReceipt returnValue = null;
         Tenant tenant = find(tenantId);
         if (tenant != null) {
-            
+            RentReceipt receipt = paymentProcessor.process(tenant, paymentAmount);
+            if (receipt != null) {
+                returnValue = receiptRepository.save(receipt);
+            }
         }
         return returnValue;
     }

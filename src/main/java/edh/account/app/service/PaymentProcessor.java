@@ -24,8 +24,10 @@ public class PaymentProcessor {
             int daysToAdvance = Double.valueOf(weeksPaid * 7).intValue();
             
             // Set the paid-to-date ahead the number of weeks
-            Instant newPaidToInstant = tenant.getCurrentRentPaidToDate().toInstant().plus(Duration.ofDays((daysToAdvance)));
-            tenant.setCurrentRentPaidToDate(Date.from(newPaidToInstant));
+            Instant i = Instant.ofEpochMilli(tenant.getCurrentRentPaidToDate().getTime());
+            Duration d = Duration.ofDays(daysToAdvance);
+            Instant j = i.plus(d);
+            tenant.setCurrentRentPaidToDate(Date.from(j));
             // Set the rent credit
             tenant.setCurrentRentCreditAmount(totalAvailable - (weeklyRent * weeksPaid));
             

@@ -1,7 +1,6 @@
 package edh.account.app.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,12 +29,7 @@ public class TenantController {
     }
     
     @RequestMapping(value="/{id}/receipt/create", method=RequestMethod.POST)
-    public ResponseEntity<RentReceipt> createReceipt(@PathVariable Long id, @RequestBody Double amount) {
-        ResponseEntity<RentReceipt> returnValue = null;
-        Tenant tenant = tenantService.find(id);
-        if (tenant != null) {
-            
-        }
-        return returnValue;
+    public RentReceipt createReceipt(@PathVariable Long id, @RequestBody Double amount) {
+        return tenantService.applyPayment(id, amount);
     }
 }
