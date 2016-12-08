@@ -1,5 +1,7 @@
 package edh.account.app.web;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +28,11 @@ public class TenantController {
     @RequestMapping(value="/create", method=RequestMethod.POST)    
     public Tenant create(@RequestBody String name) {
         return tenantService.create(name);
+    }
+    
+    @RequestMapping("/{id}/receipt")
+    public List<RentReceipt> findReceiptsForTenant(@PathVariable Long id) {
+        return tenantService.findReceiptsForTenant(id);
     }
     
     @RequestMapping(value="/{id}/receipt/create", method=RequestMethod.POST)

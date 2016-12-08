@@ -1,5 +1,8 @@
 package edh.account.app.service;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,16 @@ public class TenantServiceImpl implements TenantService {
     @Override
     public Tenant find(Long tenantId) {
         return tenantRepository.findOne(tenantId);
+    }
+    
+    @Override
+    public List<RentReceipt> findReceiptsForTenant(Long tenantId) {
+        List<RentReceipt> returnValue = Collections.emptyList();
+        Tenant tenant = tenantRepository.findOne(tenantId);
+        if (tenant != null) {
+            returnValue = receiptRepository.findByTenant(tenant);
+        }
+        return returnValue;
     }
     
     @Override

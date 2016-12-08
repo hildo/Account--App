@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -82,5 +83,39 @@ public class TenantControllerTest {
         Assert.assertEquals(2016, c.get(Calendar.YEAR));
         Assert.assertEquals(10, c.get(Calendar.MONTH));
         Assert.assertEquals(21, c.get(Calendar.DAY_OF_MONTH));
+    }
+    
+    @Test
+    public void testReceiptsForTenant() {
+        Tenant tenant = new Tenant(dummyName());
+        tenant.setCurrentRentCreditAmount(0.00);
+        Calendar c = Calendar.getInstance();
+        c.set(2016, 10, 14, 10, 0, 0);
+        tenant.setCurrentRentPaidToDate(c.getTime());
+        tenant.setWeeklyRentAmount(50.00);
+        tenant = tenantRepository.save(tenant);
+        
+        String urlBase = "/tenant/" + tenant.getId();
+
+        List<RentReceipt> receipts = restTemplate.getForObject(urlBase + "/receipt" , List.class);
+        Assert.assertNotNull(receipts);
+        Assert.assertTrue(receipts.isEmpty());
+        
+        RentReceipt receipt = restTemplate.postForObject(urlBase + "/receipt/create", 
+                50.00, RentReceipt.class);
+        
+        receipts = restTemplate.getForObject(urlBase + "/receipt" , List.class);
+        Assert.assertNotNull(receipts);
+        Assert.assertFalse(receipts.isEmpty());
+        Assert.assertEquals(1, receipts.size());
+        
+        receipt = restTemplate.postForObject(urlBase + "/receipt/create", 
+                50.00, RentReceipt.class);
+        
+        receipts = restTemplate.getForObject(urlBase + "/receipt" , List.class);
+        Assert.assertNotNull(receipts);
+        Assert.assertFalse(receipts.isEmpty());
+        Assert.assertEquals(2, receipts.size());
+        
     }
 }
