@@ -1,5 +1,6 @@
 package edh.account.app.web;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import edh.account.app.domain.RentReceipt;
@@ -38,5 +40,10 @@ public class TenantController {
     @RequestMapping(value="/{id}/receipt/create", method=RequestMethod.POST)
     public RentReceipt createReceipt(@PathVariable Long id, @RequestBody Double amount) {
         return tenantService.applyPayment(id, amount);
+    }
+    
+    @RequestMapping(value="/withrecentpayments")
+    public List<Tenant> findTenantsWithRecentPayments(@RequestParam(value="limit", required = false) Integer limit) {
+        return tenantService.findTenantsWithRecentPayments((limit != null ? limit : 1));
     }
 }

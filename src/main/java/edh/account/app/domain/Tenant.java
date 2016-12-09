@@ -94,4 +94,8 @@ public class Tenant implements Serializable {
     public void setCurrentRentCreditAmount(Double currentRentCreditAmount) {
         this.currentRentCreditAmount = currentRentCreditAmount;
     }
+    
+    public Set<RentReceipt> getReceipts() {
+        return receipts;
+    }
 }

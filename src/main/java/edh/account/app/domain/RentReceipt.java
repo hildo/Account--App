@@ -1,6 +1,9 @@
 package edh.account.app.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,15 +26,20 @@ public class RentReceipt implements Serializable {
     @Column
     private Double amount;
     
+    @Column
+    private Date createdDate;
+    
     @ManyToOne(optional = false)
+    @JsonIgnore
     private Tenant tenant;
 
     protected RentReceipt() {        
     }
     
-    public RentReceipt(Tenant tenant, Double amount) {
+    public RentReceipt(Tenant tenant, Double amount, Date createdDate) {
         this.tenant = tenant;
         this.amount = amount;
+        this.createdDate =  createdDate;
     }
     
     /**
@@ -48,6 +56,13 @@ public class RentReceipt implements Serializable {
         return amount;
     }
 
+    /**
+     * @return the created date
+     */
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+    
     /**
      * @return the tenant
      */

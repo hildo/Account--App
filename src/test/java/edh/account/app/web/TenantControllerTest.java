@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import edh.account.app.domain.RentReceipt;
 import edh.account.app.domain.Tenant;
+import edh.account.app.service.RentReceiptRepository;
 import edh.account.app.service.TenantRepository;
 
 @RunWith(SpringRunner.class)
@@ -28,6 +29,9 @@ public class TenantControllerTest {
 
     @Autowired
     private TenantRepository tenantRepository;
+    
+    @Autowired
+    private RentReceiptRepository receiptRepository;
     
     private String dummyName() {
         return "Tenant-" + Instant.now().toEpochMilli();
@@ -75,7 +79,6 @@ public class TenantControllerTest {
         Assert.assertNotNull(receipt);
         Assert.assertEquals((Double) 225.00, receipt.getAmount());
         Assert.assertNotNull(receipt.getId());
-        Assert.assertEquals(tenant.getId(), receipt.getTenant().getId());
         
         tenant = restTemplate.getForObject("/tenant/" + tenant.getId(), Tenant.class);
         Assert.assertEquals((Double) 0.0, tenant.getCurrentRentCreditAmount());
@@ -116,6 +119,57 @@ public class TenantControllerTest {
         Assert.assertNotNull(receipts);
         Assert.assertFalse(receipts.isEmpty());
         Assert.assertEquals(2, receipts.size());
+    }
+    
+    @Test
+    public void testTenantsWithRecentReceipts() {
+        List<Tenant> tenants = restTemplate.getForObject("/tenant/withrecentpayments" , List.class);
+        int origCount = tenants.size();
+
+
+        Tenant tenant = new Tenant(dummyName());
+        tenant.setCurrentRentCreditAmount(0.00);
+        Calendar c = Calendar.getInstance();
+        c.set(2016, 10, 14, 10, 0, 0);
+        tenant.setCurrentRentPaidToDate(c.getTime());
+        tenant.setWeeklyRentAmount(50.00);
+        tenant = tenantRepository.save(tenant);
+
+        Instant inst = Instant.now().minus(Duration.ofMinutes(30));
+        RentReceipt receipt = new RentReceipt(tenant, 100.00, Date.from(inst));
+        receiptRepository.save(receipt);
+        
+        tenants = restTemplate.getForObject("/tenant/withrecentpayments" , List.class);
+        Assert.assertFalse(tenants.isEmpty());
+        Assert.assertEquals(origCount + 1, tenants.size());
+    }
+    
+    @Test
+    public void testTenantsWithRecentReceiptsNamedLimit() {
+        List<Tenant> tenants = restTemplate.getForObject("/tenant/withrecentpayments" , List.class);
+        int origCount = tenants.size();
+
+
+        Tenant tenant = new Tenant(dummyName());
+        tenant.setCurrentRentCreditAmount(0.00);
+        Calendar c = Calendar.getInstance();
+        c.set(2016, 10, 14, 10, 0, 0);
+        tenant.setCurrentRentPaidToDate(c.getTime());
+        tenant.setWeeklyRentAmount(50.00);
+        tenant = tenantRepository.save(tenant);
+
+        Instant inst = Instant.now().minus(Duration.ofMinutes(90));
+        RentReceipt receipt = new RentReceipt(tenant, 100.00, Date.from(inst));
+        receiptRepository.save(receipt);
+        
+        tenants = restTemplate.getForObject("/tenant/withrecentpayments" , List.class);
+        Assert.assertFalse(tenants.isEmpty());
+        Assert.assertEquals(origCount, tenants.size());
+        
+        tenants = restTemplate.getForObject("/tenant/withrecentpayments?limit=2" , List.class);
+        Assert.assertFalse(tenants.isEmpty());
+        Assert.assertEquals(origCount + 1, tenants.size());
         
     }
+    
 }

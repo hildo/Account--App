@@ -31,7 +31,7 @@ public class PaymentProcessor {
             // Set the rent credit
             tenant.setCurrentRentCreditAmount(totalAvailable - (weeklyRent * weeksPaid));
             
-            returnValue = new RentReceipt(tenant, amount);
+            returnValue = new RentReceipt(tenant, amount, new Date());
         }
         
         return returnValue;

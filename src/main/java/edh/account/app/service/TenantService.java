@@ -15,4 +15,5 @@ public interface TenantService {
     
     public RentReceipt applyPayment(Long tenantId, Double paymentAmout);
     
+    public List<Tenant> findTenantsWithRecentPayments(Integer limit);
 }

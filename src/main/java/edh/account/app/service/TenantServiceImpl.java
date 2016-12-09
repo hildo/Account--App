@@ -1,6 +1,9 @@
 package edh.account.app.service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +56,11 @@ public class TenantServiceImpl implements TenantService {
             }
         }
         return returnValue;
+    }
+    
+    @Override
+    public List<Tenant> findTenantsWithRecentPayments(Integer limit) {
+        Date limitAsDate = Date.from(Instant.now().minus(Duration.ofHours(limit)));
+        return tenantRepository.findTenantsWithRecentReceipts(limitAsDate);
     }
 }
