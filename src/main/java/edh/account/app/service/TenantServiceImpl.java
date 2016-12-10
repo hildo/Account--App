@@ -8,11 +8,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edh.account.app.domain.RentReceipt;
 import edh.account.app.domain.Tenant;
 
 @Service
+@Transactional(readOnly=true)
 public class TenantServiceImpl implements TenantService {
 
     @Autowired
@@ -25,6 +27,7 @@ public class TenantServiceImpl implements TenantService {
     private PaymentProcessor paymentProcessor;
     
     @Override
+    @Transactional(readOnly=false)
     public Tenant create(String name) {
         Tenant newTenant = new Tenant(name);
         return tenantRepository.save(newTenant);
@@ -46,6 +49,7 @@ public class TenantServiceImpl implements TenantService {
     }
     
     @Override
+    @Transactional(readOnly=false)
     public RentReceipt applyPayment(Long tenantId, Double paymentAmount) {
         RentReceipt returnValue = null;
         Tenant tenant = find(tenantId);
